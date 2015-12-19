@@ -1,0 +1,43 @@
+symfony:
+    image: symfony-base
+    container_name: symfony
+    volumes:
+        - ./symfony:/var/www
+        - ./logs/symfony:/var/www/app/logs
+    tty: true
+    command: 'true'
+
+mysql:
+    image: mysql/mysql-server
+    container_name: symfony-mysql
+    ports:
+        - 3306:3306
+    volumes:
+        - ./mysql:/var/lib/mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_USER: root
+        MYSQL_DATABASE: symfony
+        MYSQL_PASSWORD: secret
+
+php-fpm:
+    image: symfony-php-fpm
+    container_name: symfony-php-fpm
+    volumes_from:
+        - symfony
+    links:
+        - mysql
+    volumes:
+        - ./logs/php-fpm:/var/log/php-fpm
+
+nginx:
+    image: symfony-nginx
+    container_name: symfony-nginx
+    links:
+        - php-fpm
+    volumes_from:
+        - php-fpm
+    ports:
+        - 80:80
+    volumes:
+        - ./logs/nginx:/var/log/nginx
