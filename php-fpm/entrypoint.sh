@@ -1,11 +1,18 @@
 #!/bin/sh
-# Install requirements
-composer update
-# Generate database and assets
-php app/console doctrine:schema:update --force
-php app/console assetic:dump --env=prod
-php app/console assets:install --symlink web
-chmod -R 777 app/cache/
-chmod -R 777 app/logs/
 
+# Install requirements
+composer install
+
+# Generate database and assets
+php bin/console doctrine:schema:update --force
+php bin/console assets:install --symlink web
+php bin/console security:check
+
+rm -rf var/cache/*
+rm -rf var/logs/*
+
+# Give cache and log rights
+chmod -R 777 var/
+
+# Start php-fpm
 php-fpm -F -y /etc/php/php-fpm.conf

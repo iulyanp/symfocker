@@ -1,24 +1,4 @@
-# Cache and logs (Symfony2)
-symfony/app/cache/*
-symfony/app/logs/*
-!symfony/app/cache/.gitkeep
-!symfony/app/logs/.gitkeep
-
-# Parameters
-symfony/app/config/parameters.yml
-
-# Managed by Composer
-symfony/app/bootstrap.php.cache
-symfony/bin/*
-symfony/vendor/
-
-# Assets and user uploads
-symfony/web/bundles/
-symfony/web/css/
-symfony/web/js/
-
 #Editor stuff
 /.idea/*
-/logs/*
-/mysql/*
-
+www/
+!www/.gitkeep

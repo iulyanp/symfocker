@@ -1,43 +1,67 @@
-symfony:
-    image: symfony-base
-    container_name: symfony
-    volumes:
-        - ./symfony:/var/www
-        - ./logs/symfony:/var/www/app/logs
-    tty: true
-    command: 'true'
+version: '2'
+networks:
+    symfony: 
+        driver: 'bridge'
 
-mysql:
-    image: mysql/mysql-server
-    container_name: symfony-mysql
-    ports:
-        - 3306:3306
-    volumes:
-        - ./mysql:/var/lib/mysql
-    environment:
-        MYSQL_ROOT_PASSWORD: root
-        MYSQL_USER: root
-        MYSQL_DATABASE: symfony
-        MYSQL_PASSWORD: secret
+volumes:
+    logs:
+        driver: 'local'
+    database:
+        driver: 'local'
+    php-socket:
+        driver: 'local'
 
-php-fpm:
-    image: symfony-php-fpm
-    container_name: symfony-php-fpm
-    volumes_from:
-        - symfony
-    links:
-        - mysql
-    volumes:
-        - ./logs/php-fpm:/var/log/php-fpm
+services: 
+    symfony:
+        image: iulyanpopa/alpine-web
+        container_name: data
+        volumes:
+            - ./www:/var/www
+            - logs:/var/www/var/logs
+        command: 'true'
 
-nginx:
-    image: symfony-nginx
-    container_name: symfony-nginx
-    links:
-        - php-fpm
-    volumes_from:
-        - php-fpm
-    ports:
-        - 80:80
-    volumes:
-        - ./logs/nginx:/var/log/nginx
+        networks:
+            - symfony
+
+    php-fpm:
+        image: iulyanpopa/alpine-php-fpm
+        container_name: php-fpm
+        volumes_from:
+            - symfony
+        volumes:
+            - logs:/var/log/php-fpm
+            - php-socket:/var/run/symfony
+        depends_on:
+            - mysql
+        networks:
+            - symfony
+
+    nginx:
+        image: iulyanpopa/alpine-nginx
+        container_name: nginx
+        volumes_from:
+            - symfony
+        ports:
+            - 80:80
+        volumes:
+            - logs:/var/log/nginx
+            - php-socket:/var/run/symfony
+        depends_on:
+            - php-fpm
+        networks:
+            - symfony
+
+    mysql:
+        image: mysql/mysql-server
+        container_name: mysql
+        ports:
+            - 3306:3306
+        volumes:
+            - database:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: root
+            MYSQL_DATABASE: symfony
+            MYSQL_PASSWORD: secret
+        networks:
+            - symfony
