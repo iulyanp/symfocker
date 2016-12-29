@@ -1,18 +1,25 @@
 #!/bin/sh
 
-# Install requirements
-composer install
+deluser symfony
+addgroup -g ${MY_GID:-500} symfony
+adduser -u ${MY_UID:-500} -G symfony -g 'Linux User named' -s /bin/sh -D symfony
+chown -R symfony:symfony /var/www
 
-# Generate database and assets
-php bin/console doctrine:schema:update --force
-php bin/console assets:install --symlink web
-php bin/console security:check
+su symfony <<USER
+    # Install requirements
+    composer install
 
-rm -rf var/cache/*
-rm -rf var/logs/*
+    # Generate database and assets
+    php bin/console doctrine:schema:update --force
+    php bin/console assets:install --symlink web
+    php bin/console security:check
 
-# Give cache and log rights
-chmod -R 777 var/
+    rm -rf var/cache/*
+    rm -rf var/logs/*
+
+    # Give cache and log rights
+    chown -R symfony:symfony var
+USER
 
 # Start php-fpm
 php-fpm -F -y /etc/php/php-fpm.conf

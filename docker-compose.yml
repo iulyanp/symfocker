@@ -11,43 +11,36 @@ volumes:
     php-socket:
         driver: 'local'
 
-services: 
+services:
+##
+## Uncomment this service if you want to use gulp
+## A new container for gulp will start and by default
+## will run `gulp` and then exit.
+## To run gulp later just use
+## `docker start -i gulp`
+##
+#    gulp:
+#        image: iulyanpopa/alpine-gulp
+#        build:
+#            context: ./gulp
+#            dockerfile: ./Dockerfile
+#        container_name: gulp
+#        volumes_from:
+#            - symfony
+#        command: gulp
+#        networks:
+#            - symfony
+
     symfony:
         image: iulyanpopa/alpine-web
+#        build:
+#            context: ./alpine-web
+#            dockerfile: ./Dockerfile
         container_name: data
         volumes:
-            - ./www:/var/www
+            - ./www/:/var/www
             - logs:/var/www/var/logs
         command: 'true'
-
-        networks:
-            - symfony
-
-    php-fpm:
-        image: iulyanpopa/alpine-php-fpm
-        container_name: php-fpm
-        volumes_from:
-            - symfony
-        volumes:
-            - logs:/var/log/php-fpm
-            - php-socket:/var/run/symfony
-        depends_on:
-            - mysql
-        networks:
-            - symfony
-
-    nginx:
-        image: iulyanpopa/alpine-nginx
-        container_name: nginx
-        volumes_from:
-            - symfony
-        ports:
-            - 80:80
-        volumes:
-            - logs:/var/log/nginx
-            - php-socket:/var/run/symfony
-        depends_on:
-            - php-fpm
         networks:
             - symfony
 
@@ -63,5 +56,45 @@ services:
             MYSQL_USER: root
             MYSQL_DATABASE: symfony
             MYSQL_PASSWORD: secret
+        networks:
+            - symfony
+
+    php-fpm:
+        image: iulyanpopa/alpine-php-fpm
+#        build:
+#            context: ./php-fpm
+#            dockerfile: ./Dockerfile
+        container_name: php-fpm
+        volumes_from:
+            - symfony
+        volumes:
+            - logs:/var/log/php-fpm
+            - php-socket:/var/run/symfony
+        depends_on:
+            - mysql
+        environment:
+            - MY_UID=${MY_UID}
+            - MY_GID=${MY_GID}
+        networks:
+            - symfony
+
+    nginx:
+        image: iulyanpopa/alpine-nginx
+#        build:
+#            context: ./nginx
+#            dockerfile: ./Dockerfile
+        container_name: nginx
+        volumes_from:
+            - symfony
+        ports:
+            - 80:80
+        volumes:
+            - logs:/var/log/nginx
+            - php-socket:/var/run/symfony
+        depends_on:
+            - php-fpm
+        environment:
+            - MY_UID=${MY_UID}
+            - MY_GID=${MY_GID}
         networks:
             - symfony

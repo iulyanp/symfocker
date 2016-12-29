@@ -1,8 +1,9 @@
 symfocker
 ==============
 
-A Docker setup environment for Symfony3 Framework with [Alpine Linux](https://github.com/gliderlabs/docker-alpine), 
-[Docker](https://docs.docker.com/) and [docker-compose](https://docs.docker.com/compose/install/).
+A Docker setup environment for web development in Symfony3 Framework based on 
+[Alpine Linux](https://github.com/gliderlabs/docker-alpine), 
+[Docker](https://docs.docker.com/) and [docker-compose2](https://docs.docker.com/compose/install/).
 
 ### Why Alpine?
 
@@ -21,22 +22,44 @@ Before you try this project you have to install:
 
 ### Installation
 
-Clone this repository:
+
+#### Step 1 - Clone this repository:
 
 ```bash
 $ git clone git@github.com:iulyanpopa/symfocker.git
 ```
 
+#### Step 2 - Place your Symfony 3 application into `www`
+
 Next, install your Symfony application into `www` folder and don't forget to add `127.0.0.1 app.dev` 
 in your `/etc/hosts` file if you want to be able to visit `http://app.dev`.
 
-Quick run:
+#### Step 3 - Export your user user id and group id
+
+One of the bigger problems with docker in development is that, in docker, by default you have `root` permissions and 
+locally you change the code with your own user. This leads to a lot of problems.
+I fixed this issue very simple by mapping the local user id and group id into docker.
+All you have to do is to export the `MY_UID` and `MY_GID` with your user id and group id.
+You can check to see your specific user and group id on linux with `id`.
+
+```sh
+$ uid=1000(iulyanp) gid=1000(iulyanp) ...
+```
+
+You can set default values for environment variables using a .env file, which Compose will automatically look for. 
+Values set in the shell environment will override those set in the .env file.
+
+```sh
+$ echo "MY_UID=1000" >> .env
+$ echo "MY_GID=1000" >> .env
+```
+#### Step 4 - Start the containers
 
 ```sh
 $ docker-compose up -d
 ```
-And that's it, you are done, you can visit your Symfony3 application on the following URL: [symfony.dev](http://symfony.dev)
 
+That's it, you are done. You can visit your Symfony 3 application on the following URL: [symfony.dev](http://symfony.dev)
 
 You can also build these images yourself one by one with the `build` script
 
@@ -55,7 +78,7 @@ $ docker-compose up -d
 
 ### How it works?
 
-The builded images:
+The built images:
 
 ```sh
 > $ docker images

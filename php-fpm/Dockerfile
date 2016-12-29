@@ -2,12 +2,11 @@ FROM iulyanpopa/alpine-web
 
 MAINTAINER Iulian Popa <iulyanpopa@gmail.com>
 
-RUN echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-    echo "@community http://nl.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-	apk --update add \
+RUN apk --update add \
 		wget \
 		curl \
 		git \
+		vim \
 		php5 \
 		php5-curl \
 		php5-openssl \
@@ -31,17 +30,18 @@ RUN echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> /etc/apk/re
 	    php5-opcache \
 	    php5-posix \
 	    openssh-client \
-	&& curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+	&& curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
+    && rm -rf /tmp/* \
+	&& rm -rf /var/cache/apk/*
 
 ADD php /etc/php
 
 RUN mkdir -p /var/run/symfony \
-    && chown -R symfony /var/www/ \
-    && chown -R symfony /var/run/symfony
+    && chown -R symfony:symfony /var/www/ \
+    && chown -R symfony:symfony /var/run/symfony
 
 RUN mkdir -p /var/log/php-fpm \
-    && chown -R symfony /var/log/php-fpm \
-    && chgrp -R symfony /var/log/php-fpm
+    && chown -R symfony:symfony /var/log/php-fpm
 
 ADD entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
