@@ -22,4 +22,4 @@ su symfony <<USER
 USER
 
 # Start php-fpm
-php-fpm -F -y /etc/php/php-fpm.conf
+php-fpm7 -F -y /etc/php7/php-fpm.conf

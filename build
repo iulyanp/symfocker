@@ -19,4 +19,15 @@ docker build -t iulyanpopa/alpine-nginx:$1 -t iulyanpopa/alpine-nginx:latest .
 #docker push iulyanpopa/alpine-nginx:$1
 #docker push iulyanpopa/alpine-nginx:latest
 
+
+cd $DIR/nodejs
+docker build -t iulyanpopa/alpine-node:$1 -t iulyanpopa/alpine-node:latest .
+#docker push iulyanpopa/alpine-node:$1
+#docker push iulyanpopa/alpine-node:latest
+
+cd $DIR/gulp
+docker build -t iulyanpopa/alpine-gulp:$1 -t iulyanpopa/alpine-gulp:latest .
+#docker push iulyanpopa/alpine-gulp:$1
+#docker push iulyanpopa/alpine-gulp:latest
+
 docker-compose up -d
