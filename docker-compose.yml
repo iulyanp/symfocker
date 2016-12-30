@@ -21,13 +21,13 @@ services:
 ##
 #    gulp:
 #        image: iulyanpopa/alpine-gulp
-#        build:
-#            context: ./gulp
-#            dockerfile: ./Dockerfile
+##        build:
+##            context: ./gulp
+##            dockerfile: ./Dockerfile
 #        container_name: gulp
 #        volumes_from:
 #            - symfony
-#        command: gulp
+#        command: 'gulp'
 #        networks:
 #            - symfony
 
@@ -60,7 +60,7 @@ services:
             - symfony
 
     php-fpm:
-        image: iulyanpopa/alpine-php-fpm
+        image: iulyanpopa/alpine-php-fpm7
 #        build:
 #            context: ./php-fpm
 #            dockerfile: ./Dockerfile
