@@ -44,9 +44,31 @@ services:
         networks:
             - symfony
 
+    rabbit:
+        image: rabbitmq:3-management
+        container_name: sf-rabbitmq
+        ports:
+            - 8081:15672
+            - 5672:5672
+            - 5671:5671
+        environment:
+            RABBITMQ_DEFAULT_PASS: pass
+            RABBITMQ_DEFAULT_USER: user
+#            RABBITMQ_DEFAULT_VHOST: vhost
+        networks:
+            - symfony
+
+    redis:
+        container_name: sf-redis
+        image: redis:alpine
+        ports:
+            - "6379:6379"
+        networks:
+            - symfony
+
     mysql:
         image: mysql/mysql-server
-        container_name: mysql
+        container_name: sf-mysql
         ports:
             - 3306:3306
         volumes:
@@ -64,7 +86,7 @@ services:
 #        build:
 #            context: ./php-fpm
 #            dockerfile: ./Dockerfile
-        container_name: php-fpm
+        container_name: sf-php-fpm
         volumes_from:
             - symfony
         volumes:
@@ -83,7 +105,7 @@ services:
 #        build:
 #            context: ./nginx
 #            dockerfile: ./Dockerfile
-        container_name: nginx
+        container_name: sf-nginx
         volumes_from:
             - symfony
         ports:
@@ -98,3 +120,16 @@ services:
             - MY_GID=${MY_GID}
         networks:
             - symfony
+
+    elk:
+        image: willdurand/elk
+        container_name: sf-elk
+        ports:
+            - 81:80
+        volumes:
+            - ./elk/logstash:/etc/logstash
+            - ./elk/logstash/patterns:/opt/logstash/patterns
+        volumes_from:
+            - symfony
+            - php-fpm
+            - nginx
