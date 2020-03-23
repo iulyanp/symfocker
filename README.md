@@ -96,12 +96,15 @@ Running containers:
 ```sh
 > $ docker-compose ps
 
- Name             Command            State                  Ports               
--------------------------------------------------------------------------------
-data      true                       Exit 0                                     
-mysql     /entrypoint.sh mysqld      Up       0.0.0.0:3306->3306/tcp, 33060/tcp 
-nginx     nginx                      Up       0.0.0.0:80->80/tcp                
-php-fpm   /bin/sh -c entrypoint.sh   Up               
+   Name                  Command               State                                                     Ports
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+data          true                             Exit 0
+sf-elk        /usr/bin/supervisord -n -c ...   Up       0.0.0.0:81->80/tcp
+sf-mysql      /entrypoint.sh mysqld            Up       0.0.0.0:3306->3306/tcp, 33060/tcp
+sf-nginx      nginx                            Up       0.0.0.0:80->80/tcp
+sf-php-fpm    /bin/sh -c entrypoint.sh         Up
+sf-rabbitmq   docker-entrypoint.sh rabbi ...   Up       15671/tcp, 0.0.0.0:8081->15672/tcp, 25672/tcp, 4369/tcp, 0.0.0.0:5671->5671/tcp, 0.0.0.0:5672->5672/tcp
+sf-redis      docker-entrypoint.sh redis ...   Up       0.0.0.0:6379->6379/tcp      
 ```
 
 * `data`: This is a data only container that contains the Symfony code,

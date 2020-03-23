@@ -38,31 +38,9 @@ services:
 #            dockerfile: ./Dockerfile
         container_name: data
         volumes:
-            - ./www/:/var/www
+            - ${PROJECTS_DIR}:/var/www
             - logs:/var/www/var/logs
         command: 'true'
-        networks:
-            - symfony
-
-    rabbit:
-        image: rabbitmq:3-management
-        container_name: sf-rabbitmq
-        ports:
-            - 8081:15672
-            - 5672:5672
-            - 5671:5671
-        environment:
-            RABBITMQ_DEFAULT_PASS: pass
-            RABBITMQ_DEFAULT_USER: user
-#            RABBITMQ_DEFAULT_VHOST: vhost
-        networks:
-            - symfony
-
-    redis:
-        container_name: sf-redis
-        image: redis:alpine
-        ports:
-            - "6379:6379"
         networks:
             - symfony
 
@@ -82,7 +60,7 @@ services:
             - symfony
 
     php-fpm:
-        image: iulyanpopa/alpine-php-fpm7
+        image: iulyanpopa/alpine-php-fpm
 #        build:
 #            context: ./php-fpm
 #            dockerfile: ./Dockerfile
@@ -111,6 +89,7 @@ services:
         ports:
             - 80:80
         volumes:
+            - ${VHOSTS_DIR}:/etc/nginx/sites-enabled
             - logs:/var/log/nginx
             - php-socket:/var/run/symfony
         depends_on:
@@ -118,6 +97,28 @@ services:
         environment:
             - MY_UID=${MY_UID}
             - MY_GID=${MY_GID}
+        networks:
+            - symfony
+
+    rabbit:
+        image: rabbitmq:3-management
+        container_name: sf-rabbitmq
+        ports:
+            - 8081:15672
+            - 5672:5672
+            - 5671:5671
+        environment:
+            RABBITMQ_DEFAULT_PASS: pass
+            RABBITMQ_DEFAULT_USER: user
+#            RABBITMQ_DEFAULT_VHOST: vhost
+        networks:
+            - symfony
+
+    redis:
+        container_name: sf-redis
+        image: redis:alpine
+        ports:
+            - "6379:6379"
         networks:
             - symfony
 
@@ -133,3 +134,5 @@ services:
             - symfony
             - php-fpm
             - nginx
+        networks:
+            - symfony
